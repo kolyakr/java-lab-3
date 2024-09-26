@@ -9,6 +9,7 @@ public class MainMenu {
     private BattleSimulator battleSimulator = new BattleSimulator();
     private BattleRecorder battleRecorder = new BattleRecorder();
     private Scanner scanner = new Scanner(System.in);
+    private static final int MIN_TEAM_SIZE = 2; // Мінімальна кількість дроїдів для кожної команди
 
     public void start() {
         boolean exit = false;
@@ -17,7 +18,7 @@ public class MainMenu {
             System.out.println("1. Створити дроїда");
             System.out.println("2. Показати список дроїдів");
             System.out.println("3. Запустити бій 1 на 1");
-            System.out.println("4. Запустити бій команда на команду");
+            System.out.println("4. Запустити бій команда на команду (мінімум по " + MIN_TEAM_SIZE + " дроїди в кожній команді)");
             System.out.println("5. Записати бій у файл");
             System.out.println("6. Відтворити бій з файлу");
             System.out.println("7. Вийти");
@@ -62,20 +63,27 @@ public class MainMenu {
         int choice = scanner.nextInt();
         System.out.print("Введіть ім'я дроїда: ");
         String name = scanner.next();
-        BaseDroid droid;
 
+        // Задання характеристик у певному діапазоні
+        System.out.print("Введіть здоров'я дроїда (від 50 до 200): ");
+        int health = getInputInRange(50, 200);
+
+        System.out.print("Введіть атаку дроїда (від 10 до 50): ");
+        int damage = getInputInRange(10, 50);
+
+        BaseDroid droid;
         switch (choice) {
             case 1:
-                droid = new AttackDroid(name, 100, 20);
+                droid = new AttackDroid(name, health, damage);
                 break;
             case 2:
-                droid = new RegenDroid(name, 100, 15);
+                droid = new RegenDroid(name, health, damage);
                 break;
             case 3:
-                droid = new AbsorbDroid(name, 100, 18);
+                droid = new AbsorbDroid(name, health, damage);
                 break;
             case 4:
-                droid = new MutationDroid(name, 100, 10);
+                droid = new MutationDroid(name, health, damage);
                 break;
             default:
                 System.out.println("Невірний вибір.");
@@ -84,6 +92,17 @@ public class MainMenu {
 
         droids.add(droid);
         System.out.println("Дроїд " + droid.getName() + " створений.");
+    }
+
+    private int getInputInRange(int min, int max) {
+        int value;
+        do {
+            value = scanner.nextInt();
+            if (value < min || value > max) {
+                System.out.println("Невірне значення. Введіть число в межах від " + min + " до " + max + ": ");
+            }
+        } while (value < min || value > max);
+        return value;
     }
 
     private void showDroids() {
@@ -117,8 +136,8 @@ public class MainMenu {
     }
 
     private void startTeamBattle() {
-        if (droids.size() < 4) {
-            System.out.println("Недостатньо дроїдів для командного бою.");
+        if (droids.size() < MIN_TEAM_SIZE * 2) {
+            System.out.println("Недостатньо дроїдів для командного бою. Необхідно хоча б " + (MIN_TEAM_SIZE * 2) + " дроїдів.");
             return;
         }
 

@@ -11,27 +11,71 @@ public class BattleSimulator {
     }
 
     public void simulateOneOnOne(BaseDroid droid1, BaseDroid droid2) {
-        System.out.println("Бій 1 на 1 між " + droid1.getName() + " і " + droid2.getName());
+        System.out.println("======================================================");
+        System.out.println("||                                                  ||");
+        System.out.println("||         БІЙ 1 на 1: " + droid1.getName() + " проти " + droid2.getName() + "         ||");
+        System.out.println("||                                                  ||");
+        System.out.println("======================================================");
+
+        // Додаємо початок бою до логів
+        battleRecorder.addAction("Початок бою 1 на 1 між " + droid1.getName() + " і " + droid2.getName());
 
         int round = 1;
         while (droid1.isAlive() && droid2.isAlive()) {
-            System.out.println("\n=== Раунд " + round + " ===");
+            printRoundHeader(round);
+            battleRecorder.addAction("=== РАУНД " + round + " ===");
 
+            // Атака дроїда 1
+            System.out.println(droid1.getName() + " атакує " + droid2.getName());
             droid1.attack(droid2);
+            battleRecorder.addAction(droid1.getName() + " атакує " + droid2.getName() + " і завдає " + droid1.getDamage() + " шкоди.");
+
             if (droid2.isAlive()) {
+                // Атака дроїда 2
+                System.out.println(droid2.getName() + " атакує " + droid1.getName());
                 droid2.attack(droid1);
+                battleRecorder.addAction(droid2.getName() + " атакує " + droid1.getName() + " і завдає " + droid2.getDamage() + " шкоди.");
             }
 
-            System.out.println(droid1.getName() + ": " + droid1.getHealth() + " здоров'я");
-            System.out.println(droid2.getName() + ": " + droid2.getHealth() + " здоров'я");
+            printHealthStatus(droid1, droid2); // Виведення здоров'я після раунду
+            battleRecorder.addAction("Стан після раунду: " + droid1.getName() + " - " + droid1.getHealth() + " здоров'я, " +
+                    droid2.getName() + " - " + droid2.getHealth() + " здоров'я.");
 
             round++;
         }
 
+        printWinner(droid1, droid2); // Виведення переможця
+
+        // Записуємо переможця в лог
         if (droid1.isAlive()) {
-            System.out.println("\n" + droid1.getName() + " переміг!");
+            battleRecorder.addAction("Переможець: " + droid1.getName());
         } else {
-            System.out.println("\n" + droid2.getName() + " переміг!");
+            battleRecorder.addAction("Переможець: " + droid2.getName());
+        }
+    }
+
+    // Доданий метод для виведення стану здоров'я дроїдів
+    private void printHealthStatus(BaseDroid droid1, BaseDroid droid2) {
+        System.out.println("\n=== СТАН ПІСЛЯ РАУНДУ ===");
+        System.out.println(droid1.getName() + ": " + droid1.getHealth() + " здоров'я");
+        System.out.println(droid2.getName() + ": " + droid2.getHealth() + " здоров'я");
+        System.out.println("=========================\n");
+    }
+
+    // Доданий метод для виведення переможця
+    private void printWinner(BaseDroid droid1, BaseDroid droid2) {
+        if (droid1.isAlive()) {
+            System.out.println("\n======================================================");
+            System.out.println("||                                                  ||");
+            System.out.println("||               " + droid1.getName() + " ПЕРЕМІГ!                   ||");
+            System.out.println("||                                                  ||");
+            System.out.println("======================================================\n");
+        } else {
+            System.out.println("\n======================================================");
+            System.out.println("||                                                  ||");
+            System.out.println("||               " + droid2.getName() + " ПЕРЕМІГ!                   ||");
+            System.out.println("||                                                  ||");
+            System.out.println("======================================================\n");
         }
     }
 
@@ -39,7 +83,13 @@ public class BattleSimulator {
         ArrayList<BaseDroid> team1 = new ArrayList<>();
         ArrayList<BaseDroid> team2 = new ArrayList<>();
 
-        // Розподіляємо дроїдів у дві команди випадково
+        // Переконуємося, що є мінімум 4 дроїди для бою
+        if (droids.size() < 4) {
+            System.out.println("Для командного бою необхідно мінімум 4 дроїди (2 на 2).");
+            return;
+        }
+
+        // Розподіляємо дроїдів у дві команди
         for (int i = 0; i < droids.size(); i++) {
             if (i % 2 == 0) {
                 team1.add(droids.get(i));
@@ -48,15 +98,97 @@ public class BattleSimulator {
             }
         }
 
-        System.out.println("Починається командний бій!");
-        battleRecorder.addAction("Початок командного бою");
+        System.out.println("======================================================");
+        System.out.println("||                                                  ||");
+        System.out.println("||                 ПОЧАТОК КОМАНДНОГО БОЮ           ||");
+        System.out.println("||                                                  ||");
+        System.out.println("======================================================");
 
-        for (int i = 0; i < Math.min(team1.size(), team2.size()); i++) {
-            simulateOneOnOne(team1.get(i), team2.get(i));
+        // Додаємо початок бою до логів
+        battleRecorder.addAction("Початок командного бою між Team 1 і Team 2");
+
+        int round = 1;
+        while (!team1.isEmpty() && !team2.isEmpty()) {
+            printRoundHeader(round);
+            battleRecorder.addAction("=== РАУНД " + round + " ===");
+
+            // Команда 1 атакує
+            for (BaseDroid droid : team1) {
+                if (!team2.isEmpty()) {
+                    BaseDroid target = getRandomTarget(team2);
+                    System.out.println(droid.getName() + " з команди 1 атакує " + target.getName() + " з команди 2");
+                    droid.attack(target);
+                    battleRecorder.addAction(droid.getName() + " з команди 1 атакує " + target.getName() + " з команди 2");
+
+                    if (!target.isAlive()) {
+                        System.out.println(target.getName() + " загинув!");
+                        battleRecorder.addAction(target.getName() + " з команди 2 загинув.");
+                        team2.remove(target);
+                    }
+                }
+            }
+
+            // Команда 2 атакує
+            for (BaseDroid droid : team2) {
+                if (!team1.isEmpty()) {
+                    BaseDroid target = getRandomTarget(team1);
+                    System.out.println(droid.getName() + " з команди 2 атакує " + target.getName() + " з команди 1");
+                    droid.attack(target);
+                    battleRecorder.addAction(droid.getName() + " з команди 2 атакує " + target.getName() + " з команди 1");
+
+                    if (!target.isAlive()) {
+                        System.out.println(target.getName() + " загинув!");
+                        battleRecorder.addAction(target.getName() + " з команди 1 загинув.");
+                        team1.remove(target);
+                    }
+                }
+            }
+
+            // Виведення стану команд після раунду
+            printTeamStatus(team1, team2);
+            round++;
         }
 
-        System.out.println("Командний бій завершено!");
-        battleRecorder.addAction("Командний бій завершено");
+        // Перевірка, яка команда перемогла
+        if (team1.isEmpty()) {
+            System.out.println("\n======================================================");
+            System.out.println("||                                                  ||");
+            System.out.println("||                   ПЕРЕМОГА КОМАНДИ 2            ||");
+            System.out.println("||                                                  ||");
+            System.out.println("======================================================\n");
+            battleRecorder.addAction("Перемога команди 2.");
+        } else {
+            System.out.println("\n======================================================");
+            System.out.println("||                                                  ||");
+            System.out.println("||                   ПЕРЕМОГА КОМАНДИ 1            ||");
+            System.out.println("||                                                  ||");
+            System.out.println("======================================================\n");
+            battleRecorder.addAction("Перемога команди 1.");
+        }
+    }
+
+    // Метод для вибору випадкової цілі з команди
+    private BaseDroid getRandomTarget(ArrayList<BaseDroid> team) {
+        return team.get((int) (Math.random() * team.size()));
+    }
+
+    private void printRoundHeader(int round) {
+        System.out.println("\n======================================================");
+        System.out.println("||                     РАУНД " + round + "                      ||");
+        System.out.println("======================================================\n");
+    }
+
+    private void printTeamStatus(ArrayList<BaseDroid> team1, ArrayList<BaseDroid> team2) {
+        System.out.println("\n=== СТАН КОМАНД ===");
+        System.out.println("Команда 1:");
+        for (BaseDroid droid : team1) {
+            System.out.println(droid.getName() + ": " + droid.getHealth() + " здоров'я");
+        }
+        System.out.println("Команда 2:");
+        for (BaseDroid droid : team2) {
+            System.out.println(droid.getName() + ": " + droid.getHealth() + " здоров'я");
+        }
+        System.out.println("===================\n");
     }
 
     // Після бою можна викликати метод збереження

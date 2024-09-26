@@ -20,9 +20,9 @@ public class BattleRecorder {
         battleLog.add(action);
     }
 
-    // Зберігаємо бій у файл
+    // Зберігаємо бій у файл, перезаписуючи його, якщо він вже існує
     public void saveBattle() {
-        try (FileWriter writer = new FileWriter(FILE_NAME)) {
+        try (FileWriter writer = new FileWriter(FILE_NAME)) { // Перезапис файлу
             for (String action : battleLog) {
                 writer.write(action + "\n");
             }

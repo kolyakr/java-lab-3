@@ -10,19 +10,24 @@ public class MainMenu {
     private BattleRecorder battleRecorder = new BattleRecorder();
     private Scanner scanner = new Scanner(System.in);
     private static final int MIN_TEAM_SIZE = 2; // Мінімальна кількість дроїдів для кожної команди
+    private boolean isBattleFinished = false; // Прапорець, який показує, чи був проведений бій
 
     public void start() {
         boolean exit = false;
         while (!exit) {
-            System.out.println("Меню:");
-            System.out.println("1. Створити дроїда");
-            System.out.println("2. Показати список дроїдів");
-            System.out.println("3. Запустити бій 1 на 1");
-            System.out.println("4. Запустити бій команда на команду (мінімум по " + MIN_TEAM_SIZE + " дроїди в кожній команді)");
-            System.out.println("5. Записати бій у файл");
-            System.out.println("6. Відтворити бій з файлу");
-            System.out.println("7. Вийти");
+            printMenuHeader();
+            System.out.println("| 1. Створити дроїда                                 |");
+            System.out.println("| 2. Показати список дроїдів                         |");
+            System.out.println("| 3. Запустити бій 1 на 1                            |");
+            System.out.println("| 4. Запустити бій команда на команду                |");
+            if (isBattleFinished) {
+                System.out.println("| 5. Записати проведений бій у файл               |");
+            }
+            System.out.println("| 6. Відтворити бій з файлу                          |");
+            System.out.println("| 7. Вийти                                           |");
+            printMenuFooter();
 
+            System.out.print("Оберіть дію: ");
             int choice = scanner.nextInt();
             switch (choice) {
                 case 1:
@@ -38,7 +43,11 @@ public class MainMenu {
                     startTeamBattle();
                     break;
                 case 5:
-                    saveBattle();
+                    if (isBattleFinished) {
+                        saveBattle();
+                    } else {
+                        System.out.println("Спершу потрібно провести бій.");
+                    }
                     break;
                 case 6:
                     loadBattle();
@@ -51,6 +60,22 @@ public class MainMenu {
                     System.out.println("Невірний вибір. Спробуйте ще раз.");
             }
         }
+    }
+
+    // Виведення шапки меню
+    private void printMenuHeader() {
+        System.out.println("******************************************************");
+        System.out.println("*                                                    *");
+        System.out.println("*                МЕНЮ УПРАВЛІННЯ ДРОЇДАМИ            *");
+        System.out.println("*                                                    *");
+        System.out.println("******************************************************");
+        System.out.println("|                                                    |");
+    }
+
+    // Виведення футера меню
+    private void printMenuFooter() {
+        System.out.println("|                                                    |");
+        System.out.println("******************************************************");
     }
 
     private void createDroid() {
@@ -130,6 +155,7 @@ public class MainMenu {
 
         if (isValidIndex(droid1Index) && isValidIndex(droid2Index)) {
             battleSimulator.simulateOneOnOne(droids.get(droid1Index), droids.get(droid2Index));
+            isBattleFinished = true;  // Вказуємо, що бій завершено
         } else {
             System.out.println("Невірний вибір дроїдів.");
         }
@@ -143,6 +169,7 @@ public class MainMenu {
 
         System.out.println("Формуємо команди для бою:");
         battleSimulator.simulateTeamBattle(droids);
+        isBattleFinished = true;  // Вказуємо, що бій завершено
     }
 
     private boolean isValidIndex(int index) {
@@ -150,10 +177,15 @@ public class MainMenu {
     }
 
     private void saveBattle() {
-        battleRecorder.saveBattle();
+        if (isBattleFinished) {
+            battleSimulator.saveBattleLog();
+            isBattleFinished = false;  // Після збереження очищуємо прапорець
+        } else {
+            System.out.println("Немає бою для збереження.");
+        }
     }
 
     private void loadBattle() {
-        battleRecorder.loadBattle();
+        battleSimulator.replayBattle();
     }
 }

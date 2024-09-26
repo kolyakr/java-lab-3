@@ -2,23 +2,36 @@ package Menu;
 
 import Droid.BaseDroid;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class BattleSimulator {
-    private Random random = new Random();
+    private BattleRecorder battleRecorder;
+
+    public BattleSimulator() {
+        this.battleRecorder = new BattleRecorder(); // Ініціалізуємо записувач бою
+    }
 
     public void simulateOneOnOne(BaseDroid droid1, BaseDroid droid2) {
         System.out.println("Бій 1 на 1 між " + droid1.getName() + " і " + droid2.getName());
+
+        int round = 1;
         while (droid1.isAlive() && droid2.isAlive()) {
+            System.out.println("\n=== Раунд " + round + " ===");
+
             droid1.attack(droid2);
             if (droid2.isAlive()) {
                 droid2.attack(droid1);
             }
+
+            System.out.println(droid1.getName() + ": " + droid1.getHealth() + " здоров'я");
+            System.out.println(droid2.getName() + ": " + droid2.getHealth() + " здоров'я");
+
+            round++;
         }
+
         if (droid1.isAlive()) {
-            System.out.println(droid1.getName() + " переміг!");
+            System.out.println("\n" + droid1.getName() + " переміг!");
         } else {
-            System.out.println(droid2.getName() + " переміг!");
+            System.out.println("\n" + droid2.getName() + " переміг!");
         }
     }
 
@@ -36,10 +49,24 @@ public class BattleSimulator {
         }
 
         System.out.println("Починається командний бій!");
+        battleRecorder.addAction("Початок командного бою");
+
         for (int i = 0; i < Math.min(team1.size(), team2.size()); i++) {
             simulateOneOnOne(team1.get(i), team2.get(i));
         }
 
-        System.out.println("Бій завершено!");
+        System.out.println("Командний бій завершено!");
+        battleRecorder.addAction("Командний бій завершено");
+    }
+
+    // Після бою можна викликати метод збереження
+    public void saveBattleLog() {
+        battleRecorder.saveBattle();
+    }
+
+    // Відтворення бою з файлу
+    public void replayBattle() {
+        battleRecorder.loadBattle();
+        battleRecorder.replayBattle();
     }
 }

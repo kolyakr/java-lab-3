@@ -1,35 +1,31 @@
 package Droid;
 
 public class RegenDroid extends BaseDroid {
-    private static final double HEALTH_THRESHOLD = 0.3; // 30% від максимального здоров'я
-    private static final int REGEN_AMOUNT = 10; // Кількість очок здоров'я для регенерації
+    private static final double HEALTH_THRESHOLD = 0.3; // 30% здоров'я, після якого активується регенерація
+    private static final int REGEN_AMOUNT = 10; // Кількість здоров'я для регенерації
 
-    private int maxHealth; // Запам'ятовуємо максимальне здоров'я для розрахунків
+    private int maxHealth; // Запам'ятовуємо максимальний рівень здоров'я для регенерації
 
-    // Конструктор
     public RegenDroid(String name, int health, int damage) {
         super(name, health, damage);
-        this.maxHealth = health; // Зберігаємо максимальний рівень здоров'я
+        this.maxHealth = health;
     }
 
-    // Перевизначаємо метод takeDamage, щоб додати регенерацію
     @Override
     public void takeDamage(int damage) {
-        super.takeDamage(damage); // Викликаємо стандартне нанесення шкоди
-        if (getHealth() < maxHealth * HEALTH_THRESHOLD) {
+        super.takeDamage(damage);
+        if (getHealth() < maxHealth * HEALTH_THRESHOLD && getHealth() > 0) {
             regenerate();
         }
     }
 
-    // Метод регенерації
     private void regenerate() {
-        setHealth(getHealth() + REGEN_AMOUNT); // Додаємо очки здоров'я
+        setHealth(getHealth() + REGEN_AMOUNT);
         System.out.println(getName() + " регенерує " + REGEN_AMOUNT + " здоров'я.");
     }
 
-    // Перевизначаємо метод toString для додаткової інформації
     @Override
     public String toString() {
-        return super.toString() + " (максимальне здоров'я = " + maxHealth + ")";
+        return super.toString() + " (RegenDroid)";
     }
 }

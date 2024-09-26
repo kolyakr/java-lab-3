@@ -1,7 +1,6 @@
 package Droid;
 
 public class BaseDroid {
-    // Поля класу
     private String name;
     private int health;
     private int damage;
@@ -51,6 +50,7 @@ public class BaseDroid {
     public void attack(BaseDroid target) {
         System.out.println(this.name + " атакує " + target.getName() + " і завдає " + this.damage + " шкоди.");
         target.takeDamage(this.damage);
+        System.out.println(target.getName() + " має " + target.getHealth() + " здоров'я після атаки.");
     }
 
     // Перевірка стану живого дроїда
@@ -61,6 +61,6 @@ public class BaseDroid {
     // Метод для відображення інформації про дроїда
     @Override
     public String toString() {
-        return "BaseDroid{name='" + name + "', health=" + health + ", damage=" + damage + "}";
+        return "Droid{name='" + name + "', health=" + health + ", damage=" + damage + "}";
     }
 }

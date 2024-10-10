@@ -15,12 +15,10 @@ public class BattleRecorder {
         battleLog = new ArrayList<>();
     }
 
-    // Додаємо дію до списку бою
     public void addAction(String action) {
         battleLog.add(action);
     }
 
-    // Зберігаємо бій у файл, перезаписуючи його, якщо він вже існує
     public void saveBattle() {
         try (FileWriter writer = new FileWriter(FILE_NAME)) { // Перезапис файлу
             for (String action : battleLog) {
@@ -32,7 +30,6 @@ public class BattleRecorder {
         }
     }
 
-    // Завантажуємо бій із файлу
     public List<String> loadBattle() {
         try {
             List<String> fileContent = Files.readAllLines(Paths.get(FILE_NAME));
@@ -45,12 +42,10 @@ public class BattleRecorder {
         }
     }
 
-    // Повертаємо поточний список дій бою
     public List<String> getBattleLog() {
         return battleLog;
     }
 
-    // Відтворюємо бій (виводимо всі дії на екран)
     public void replayBattle() {
         if (battleLog.isEmpty()) {
             System.out.println("Бій не знайдено. Завантажте його з файлу.");

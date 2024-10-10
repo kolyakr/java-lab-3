@@ -7,7 +7,7 @@ public class BattleSimulator {
     private BattleRecorder battleRecorder;
 
     public BattleSimulator() {
-        this.battleRecorder = new BattleRecorder(); // Ініціалізуємо записувач бою
+        this.battleRecorder = new BattleRecorder();
     }
 
     public void simulateOneOnOne(BaseDroid droid1, BaseDroid droid2) {
@@ -17,7 +17,6 @@ public class BattleSimulator {
         System.out.println("||                                                  ||");
         System.out.println("======================================================");
 
-        // Додаємо початок бою до логів
         battleRecorder.addAction("Початок бою 1 на 1 між " + droid1.getName() + " і " + droid2.getName());
 
         int round = 1;
@@ -44,9 +43,8 @@ public class BattleSimulator {
             round++;
         }
 
-        printWinner(droid1, droid2); // Виведення переможця
+        printWinner(droid1, droid2);
 
-        // Записуємо переможця в лог
         if (droid1.isAlive()) {
             battleRecorder.addAction("Переможець: " + droid1.getName());
         } else {
@@ -54,7 +52,6 @@ public class BattleSimulator {
         }
     }
 
-    // Доданий метод для виведення стану здоров'я дроїдів
     private void printHealthStatus(BaseDroid droid1, BaseDroid droid2) {
         System.out.println("\n=== СТАН ПІСЛЯ РАУНДУ ===");
         System.out.println(droid1.getName() + ": " + droid1.getHealth() + " здоров'я");
@@ -62,7 +59,6 @@ public class BattleSimulator {
         System.out.println("=========================\n");
     }
 
-    // Доданий метод для виведення переможця
     private void printWinner(BaseDroid droid1, BaseDroid droid2) {
         if (droid1.isAlive()) {
             System.out.println("\n======================================================");
@@ -83,13 +79,11 @@ public class BattleSimulator {
         ArrayList<BaseDroid> team1 = new ArrayList<>();
         ArrayList<BaseDroid> team2 = new ArrayList<>();
 
-        // Переконуємося, що є мінімум 4 дроїди для бою
         if (droids.size() < 4) {
             System.out.println("Для командного бою необхідно мінімум 4 дроїди (2 на 2).");
             return;
         }
 
-        // Розподіляємо дроїдів у дві команди
         for (int i = 0; i < droids.size(); i++) {
             if (i % 2 == 0) {
                 team1.add(droids.get(i));
@@ -104,7 +98,6 @@ public class BattleSimulator {
         System.out.println("||                                                  ||");
         System.out.println("======================================================");
 
-        // Додаємо початок бою до логів
         battleRecorder.addAction("Початок командного бою між Team 1 і Team 2");
 
         int round = 1;
@@ -112,7 +105,6 @@ public class BattleSimulator {
             printRoundHeader(round);
             battleRecorder.addAction("=== РАУНД " + round + " ===");
 
-            // Команда 1 атакує
             for (BaseDroid droid : team1) {
                 if (!team2.isEmpty()) {
                     BaseDroid target = getRandomTarget(team2);
@@ -128,7 +120,6 @@ public class BattleSimulator {
                 }
             }
 
-            // Команда 2 атакує
             for (BaseDroid droid : team2) {
                 if (!team1.isEmpty()) {
                     BaseDroid target = getRandomTarget(team1);
@@ -144,12 +135,10 @@ public class BattleSimulator {
                 }
             }
 
-            // Виведення стану команд після раунду
             printTeamStatus(team1, team2);
             round++;
         }
 
-        // Перевірка, яка команда перемогла
         if (team1.isEmpty()) {
             System.out.println("\n======================================================");
             System.out.println("||                                                  ||");
@@ -167,7 +156,6 @@ public class BattleSimulator {
         }
     }
 
-    // Метод для вибору випадкової цілі з команди
     private BaseDroid getRandomTarget(ArrayList<BaseDroid> team) {
         return team.get((int) (Math.random() * team.size()));
     }
@@ -191,12 +179,10 @@ public class BattleSimulator {
         System.out.println("===================\n");
     }
 
-    // Після бою можна викликати метод збереження
     public void saveBattleLog() {
         battleRecorder.saveBattle();
     }
 
-    // Відтворення бою з файлу
     public void replayBattle() {
         battleRecorder.loadBattle();
         battleRecorder.replayBattle();

@@ -12,7 +12,6 @@ public class BaseDroid {
         this.damage = damage;
     }
 
-    // Методи доступу (геттери)
     public String getName() {
         return name;
     }
@@ -25,7 +24,6 @@ public class BaseDroid {
         return damage;
     }
 
-    // Методи для зміни значень полів (сеттер)
     public void setName(String name) {
         this.name = name;
     }
@@ -38,7 +36,6 @@ public class BaseDroid {
         this.damage = damage;
     }
 
-    // Метод для нанесення шкоди
     public void takeDamage(int damage) {
         this.health -= damage;
         if (this.health < 0) {
@@ -46,19 +43,16 @@ public class BaseDroid {
         }
     }
 
-    // Метод для атаки
     public void attack(BaseDroid target) {
         System.out.println(this.name + " атакує " + target.getName() + " і завдає " + this.damage + " шкоди.");
         target.takeDamage(this.damage);
         System.out.println(target.getName() + " має " + target.getHealth() + " здоров'я після атаки.");
     }
 
-    // Перевірка стану живого дроїда
     public boolean isAlive() {
         return this.health > 0;
     }
 
-    // Метод для відображення інформації про дроїда
     @Override
     public String toString() {
         return "Droid{name='" + name + "', health=" + health + ", damage=" + damage + "}";

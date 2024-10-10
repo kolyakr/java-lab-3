@@ -3,15 +3,24 @@ package Droid;
 import java.util.Random;
 
 public class MutationDroid extends BaseDroid {
-    private static final int ATTACK_BOOST = 5;   // Підвищення атаки при мутації
-    private static final int HEALTH_BOOST = 10;   // Підвищення здоров'я при мутації
-    private static final int DEFENSE_BOOST = 3;   // Зменшення отриманої шкоди при мутації
-
+    private int attackBoost;
+    private int healthBoost;
+    private int defenseBoost;
     private Random random;
 
-    public MutationDroid(String name, int health, int damage) {
+    public MutationDroid(String name, int health, int damage, int attackBoost, int healthBoost, int defenseBoost) {
         super(name, health, damage);
+        this.attackBoost = validateBoost(attackBoost, 1, 10);
+        this.healthBoost = validateBoost(healthBoost, 5, 20);
+        this.defenseBoost = validateBoost(defenseBoost, 1, 5);
         this.random = new Random();
+    }
+
+    private int validateBoost(int value, int min, int max) {
+        if (value < min || value > max) {
+            throw new IllegalArgumentException("Значення повинно бути між " + min + " і " + max + ".");
+        }
+        return value;
     }
 
     public void mutate() {
@@ -19,12 +28,12 @@ public class MutationDroid extends BaseDroid {
 
         switch (mutationType) {
             case 0:
-                setDamage(getDamage() + ATTACK_BOOST);
-                System.out.println(getName() + " мутує! Атака збільшується на " + ATTACK_BOOST + ".");
+                setDamage(getDamage() + attackBoost);
+                System.out.println(getName() + " мутує! Атака збільшується на " + attackBoost + ".");
                 break;
             case 1:
-                setHealth(getHealth() + HEALTH_BOOST);
-                System.out.println(getName() + " мутує! Здоров'я збільшується на " + HEALTH_BOOST + ".");
+                setHealth(getHealth() + healthBoost);
+                System.out.println(getName() + " мутує! Здоров'я збільшується на " + healthBoost + ".");
                 break;
             case 2:
                 System.out.println(getName() + " мутує! Захист підвищується, зменшуючи отриману шкоду.");
@@ -35,9 +44,9 @@ public class MutationDroid extends BaseDroid {
     @Override
     public void takeDamage(int damage) {
         if (random.nextInt(3) == 2) {
-            damage -= DEFENSE_BOOST;
+            damage -= defenseBoost;
             if (damage < 0) damage = 0;
-            System.out.println(getName() + " зменшує шкоду на " + DEFENSE_BOOST + " через мутацію.");
+            System.out.println(getName() + " зменшує шкоду на " + defenseBoost + " через мутацію.");
         }
         super.takeDamage(damage);
     }
@@ -50,6 +59,10 @@ public class MutationDroid extends BaseDroid {
 
     @Override
     public String toString() {
-        return super.toString() + " (MutationDroid)";
+        return super.toString() +
+                " (MutationDroid) " +
+                "[Attack Boost: " + attackBoost +
+                ", Health Boost: " + healthBoost +
+                ", Defense Boost: " + defenseBoost + "]";
     }
 }

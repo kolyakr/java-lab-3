@@ -9,22 +9,22 @@ public class MainMenu {
     private BattleSimulator battleSimulator = new BattleSimulator();
     private BattleRecorder battleRecorder = new BattleRecorder();
     private Scanner scanner = new Scanner(System.in);
-    private static final int MIN_TEAM_SIZE = 2; // Мінімальна кількість дроїдів для кожної команди
-    private boolean isBattleFinished = false; // Прапорець, який показує, чи був проведений бій
+    private static final int MIN_TEAM_SIZE = 2;
+    private boolean isBattleFinished = false;
 
     public void start() {
         boolean exit = false;
         while (!exit) {
             printMenuHeader();
-            System.out.println("| 1. Створити дроїда                                 |");
-            System.out.println("| 2. Показати список дроїдів                         |");
-            System.out.println("| 3. Запустити бій 1 на 1                            |");
-            System.out.println("| 4. Запустити бій команда на команду                |");
+            System.out.println("|| 1. Створити дроїда                                 ||");
+            System.out.println("|| 2. Показати список дроїдів                         ||");
+            System.out.println("|| 3. Запустити бій 1 на 1                            ||");
+            System.out.println("|| 4. Запустити бій команда на команду                ||");
             if (isBattleFinished) {
-                System.out.println("| 5. Записати проведений бій у файл               |");
+                System.out.println("|| 5. Записати проведений бій у файл               ||");
             }
-            System.out.println("| 6. Відтворити бій з файлу                          |");
-            System.out.println("| 7. Вийти                                           |");
+            System.out.println("|| 6. Відтворити бій з файлу                          ||");
+            System.out.println("|| 7. Вийти                                           ||");
             printMenuFooter();
 
             System.out.print("Оберіть дію: ");
@@ -62,20 +62,18 @@ public class MainMenu {
         }
     }
 
-    // Виведення шапки меню
     private void printMenuHeader() {
-        System.out.println("******************************************************");
-        System.out.println("*                                                    *");
-        System.out.println("*                МЕНЮ УПРАВЛІННЯ ДРОЇДАМИ            *");
-        System.out.println("*                                                    *");
-        System.out.println("******************************************************");
-        System.out.println("|                                                    |");
+        System.out.println("=======================================================");
+        System.out.println("||                                                    ||");
+        System.out.println("||                МЕНЮ УПРАВЛІННЯ ДРОЇДАМИ            ||");
+        System.out.println("||                                                    ||");
+        System.out.println("=======================================================");
+        System.out.println("||                                                    ||");
     }
 
-    // Виведення футера меню
     private void printMenuFooter() {
-        System.out.println("|                                                    |");
-        System.out.println("******************************************************");
+        System.out.println("||                                                    ||");
+        System.out.println("=======================================================");
     }
 
     private void createDroid() {
@@ -89,7 +87,6 @@ public class MainMenu {
         System.out.print("Введіть ім'я дроїда: ");
         String name = scanner.next();
 
-        // Задання характеристик у певному діапазоні
         System.out.print("Введіть здоров'я дроїда (від 50 до 200): ");
         int health = getInputInRange(50, 200);
 
@@ -99,16 +96,38 @@ public class MainMenu {
         BaseDroid droid;
         switch (choice) {
             case 1:
-                droid = new AttackDroid(name, health, damage);
+                // Введення параметрів для AttackDroid
+                System.out.print("Введіть шанс критичного удару (0.0 - 1.0): ");
+                double criticalHitChance = getInputInRangeDouble(0.0, 1.0);
+                System.out.print("Введіть множник критичного удару (1.0 - 3.0): ");
+                double criticalHitMultiplier = getInputInRangeDouble(1.0, 3.0);
+                droid = new AttackDroid(name, health, damage, criticalHitChance, criticalHitMultiplier);
                 break;
             case 2:
-                droid = new RegenDroid(name, health, damage);
+                // Введення параметрів для RegenDroid
+                System.out.print("Введіть поріг здоров'я для регенерації (0.1 - 0.5): ");
+                double healthThreshold = getInputInRangeDouble(0.1, 0.5);
+                System.out.print("Введіть кількість регенерації (5 - 30): ");
+                int regenAmount = getInputInRange(5, 30);
+                droid = new RegenDroid(name, health, damage, healthThreshold, regenAmount);
                 break;
             case 3:
-                droid = new AbsorbDroid(name, health, damage);
+                // Введення параметрів для AbsorbDroid
+                System.out.print("Введіть відсоток поглинання шкоди (0.1 - 0.5): ");
+                double absorbPercentage = getInputInRangeDouble(0.1, 0.5);
+                System.out.print("Введіть підвищення атаки при поглинанні (1 - 10): ");
+                int attackBoost = getInputInRange(1, 10);
+                droid = new AbsorbDroid(name, health, damage, absorbPercentage, attackBoost);
                 break;
             case 4:
-                droid = new MutationDroid(name, health, damage);
+                // Введення параметрів для MutationDroid
+                System.out.print("Введіть підвищення атаки при мутації (1 - 10): ");
+                int mutationAttackBoost = getInputInRange(1, 10);
+                System.out.print("Введіть підвищення здоров'я при мутації (5 - 20): ");
+                int mutationHealthBoost = getInputInRange(5, 20);
+                System.out.print("Введіть зменшення шкоди при мутації (1 - 5): ");
+                int mutationDefenseBoost = getInputInRange(1, 5);
+                droid = new MutationDroid(name, health, damage, mutationAttackBoost, mutationHealthBoost, mutationDefenseBoost);
                 break;
             default:
                 System.out.println("Невірний вибір.");
@@ -129,6 +148,25 @@ public class MainMenu {
         } while (value < min || value > max);
         return value;
     }
+
+    private double getInputInRangeDouble(double min, double max) {
+        double value;
+        do {
+            String input = scanner.next();
+            input = input.replace(',', '.');
+            try {
+                value = Double.parseDouble(input);
+                if (value < min || value > max) {
+                    System.out.println("Невірне значення. Введіть число в межах від " + min + " до " + max + ": ");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Невірний формат. Введіть число.");
+                value = min - 1;
+            }
+        } while (value < min || value > max);
+        return value;
+    }
+
 
     private void showDroids() {
         if (droids.isEmpty()) {
@@ -155,7 +193,7 @@ public class MainMenu {
 
         if (isValidIndex(droid1Index) && isValidIndex(droid2Index)) {
             battleSimulator.simulateOneOnOne(droids.get(droid1Index), droids.get(droid2Index));
-            isBattleFinished = true;  // Вказуємо, що бій завершено
+            isBattleFinished = true;
         } else {
             System.out.println("Невірний вибір дроїдів.");
         }
@@ -169,7 +207,7 @@ public class MainMenu {
 
         System.out.println("Формуємо команди для бою:");
         battleSimulator.simulateTeamBattle(droids);
-        isBattleFinished = true;  // Вказуємо, що бій завершено
+        isBattleFinished = true;
     }
 
     private boolean isValidIndex(int index) {
@@ -179,7 +217,7 @@ public class MainMenu {
     private void saveBattle() {
         if (isBattleFinished) {
             battleSimulator.saveBattleLog();
-            isBattleFinished = false;  // Після збереження очищуємо прапорець
+            isBattleFinished = false;
         } else {
             System.out.println("Немає бою для збереження.");
         }
